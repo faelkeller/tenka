@@ -1,0 +1,29 @@
+{
+  "name": "tenka_backend",
+  "version": "1.0.0",
+  "description": "Backend for tenka's test",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faelkeller/tenka.git"
+  },
+  "keywords": [
+    "node",
+    "socketio",
+    "mongodb"
+  ],
+  "author": "Rafael Keller",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.*",
+    "socket.io": "^2.*"
+  },
+  "bugs": {
+    "url": "https://github.com/faelkeller/tenka/issues"
+  },
+  "homepage": "https://github.com/faelkeller/tenka#readme"
+}
