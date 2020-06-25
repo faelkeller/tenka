@@ -9,6 +9,6 @@ http.listen(3000, function(){
 io.on('connection', function(socket){
 	socket.on('sendUrl', function(url){
 		let thumbs = [];
-		io.emit('updateThumbs', thumbs);
+		io.emit('updateImages', thumbs);
 	});
 });
