@@ -5,23 +5,19 @@ import Card from 'react-bootstrap/Card';
 
 class CardUrl extends Component{
   render(){
+
+    let thumbs = this.props.thumbs;
+    let items = thumbs.map((thumb, idx) =>
+      <Col><img key={idx} src={thumb} class="img-fluid" /></Col>
+    );
+
+
     return (
-      <Card className="mb-1">
+      <Card className="mb-3">
         <Card.Body>
           <Card.Title>{this.props.url}</Card.Title>
           <Row md={4}>
-            <Col>
-              <img src="http://rafaelkeller.com.br/wp-content/themes/rk2018/images/intro-bg.jpg" class="img-fluid" />
-            </Col>
-            <Col>
-              <img src="http://rafaelkeller.com.br/wp-content/themes/rk2018/images/intro-bg.jpg" class="img-fluid" />
-            </Col>
-            <Col>
-              <img src="http://rafaelkeller.com.br/wp-content/themes/rk2018/images/intro-bg.jpg" class="img-fluid" />
-            </Col>
-            <Col>
-              <img src="http://rafaelkeller.com.br/wp-content/themes/rk2018/images/intro-bg.jpg" class="img-fluid" />
-            </Col>
+            {items}
           </Row>
         </Card.Body>
       </Card>
