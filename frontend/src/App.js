@@ -4,8 +4,6 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import CardUrl from './CardUrl';
-import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
 
 class App extends Component {
 
@@ -59,7 +57,7 @@ class App extends Component {
       <section>
         <Container className="p-3">
           <Form.Group>
-            <Form.Control type="text" name="url" id="url" value={this.state.url} onChange={event=>this.handleChange(event)} placeholder="Insira uma url" />
+            <Form.Control type="text" name="url" id="url" value={this.state.url} onChange={event=>this.handleChange(event)} placeholder="Insira uma url. ex.: http://rafaelkeller.com.br" />
           </Form.Group>
 
           <Button onClick={() => this.sendUrl()}>Enviar</Button>        

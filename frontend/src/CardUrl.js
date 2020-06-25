@@ -8,7 +8,7 @@ class CardUrl extends Component{
 
     let thumbs = this.props.thumbs;
     let items = thumbs.map((thumb, idx) =>
-      <Col><img key={idx} src={thumb} class="img-fluid" /></Col>
+      <Col><img key={idx} alt="..." src={thumb} class="img-fluid" /></Col>
     );
 
 
