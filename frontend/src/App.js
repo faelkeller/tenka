@@ -24,7 +24,6 @@ class App extends Component {
   }
 
   pushUrl(objectUrl){
-    console.log(objectUrl);
     let urls = this.state.urls;
     urls.push(objectUrl);
     this.setState((state) => {
