@@ -21,6 +21,8 @@
   "dependencies": {
     "express": "^4.*",
     "is-valid-http-url": "^1.0.3",
+    "mongodb": "^3.5.9",
+    "mongoose": "^5.9.20",
     "node-html-parser": "^1.2.20",
     "socket.io": "^2.*",
     "url-parse": "^1.4.7"

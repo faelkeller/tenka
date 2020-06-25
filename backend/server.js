@@ -17,16 +17,43 @@ io.on('connection', function(socket){
 			return false;
 		}
 
-		let html = getHtml(url);
+		let html = storeUrl(url);
 		
 	});
 });
 
-function getHtml(url){
+/* GET Userlist page. */
+app.get('/urllist', function(req, res) {
+   var db = require("./db");
+   var Urls= db.Mongoose.model('urlcollection', db.UrlSchema, 'urlcollection');
+   Urls.find({}).lean().exec(
+      function (e, docs) {
+         res.send(docs);
+   });
+});
+
+function storeUrl(url){
+	var db = require("./db"); 
+    var Urls = db.Mongoose.model('urlcollection', db.UrlSchema, 'urlcollection');
+    var urlDB = new Urls({ url: url });
+    
+    urlDB.save(function (err, urlObject) {
+        if (err) {
+            console.log("Error! " + err.message);
+            return false;
+        }
+        else {
+            io.emit('updateImages', {id: urlDB._id, url: url, thumbs: []});
+            getHtml(url, urlObject);
+        }
+    });
+}
+
+function getHtml(url, urlObject){
 	request(url, { json: true }, (err, res, body) => {
 	  if (err) { return console.log(err); }
 	  let images = getImages(body);
-	  io.emit('updateImages', {url: url, thumbs: images});
+	  io.emit('updateImages', {id: urlObject._id, url: url, thumbs: images});
 	});
 }
 

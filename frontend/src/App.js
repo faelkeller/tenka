@@ -25,7 +25,25 @@ class App extends Component {
 
   pushUrl(objectUrl){
     let urls = this.state.urls;
+
+    var index = null;
+    for (let i=0; i < urls.length; i++){
+      if (objectUrl._id == urls[i]._id){
+        index = i;  
+      }
+    }
+
+    console.log("index", index);
+    console.log("urls", urls);
+
+    if (index){
+      urls.splice(index, 1);  
+    }
+
+    console.log("urls", urls);
+    
     urls.push(objectUrl);
+    
     this.setState((state) => {
       return {urls: urls}
     }); 
@@ -49,7 +67,7 @@ class App extends Component {
 
     let urls = this.state.urls;
     let items = urls.map((urlObject, idx) =>
-      <CardUrl key={idx} url={urlObject.url} thumbs={urlObject.thumbs}  />
+      <CardUrl key={urlObject.id} id={urlObject.id} url={urlObject.url} thumbs={urlObject.thumbs}  />
     );
 
     return (
