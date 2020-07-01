@@ -27,9 +27,9 @@ class App extends Component {
     let urls = this.state.urls;
 
     var index = null;
-    
+
     for (let i=0; i < urls.length; i++){
-      if (objectUrl._id == urls[i]._id){
+      if (objectUrl.id == urls[i].id){
         index = i;  
       }
     }
