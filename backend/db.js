@@ -7,8 +7,8 @@ mongoose.connect('mongodb://127.0.0.1/tenka').then(() => {
 
 var urlSchema = new mongoose.Schema({
     url: String,
-    images: [{url: String}],
-    thumbs: [{path: String}]
+    images: [String],
+    thumbs: [String]
 }, { collection: 'urlcollection' }
 );
 
