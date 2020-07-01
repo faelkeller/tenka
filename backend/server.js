@@ -37,23 +37,26 @@ function storeUrl(url){
     var Urls = db.Mongoose.model('urlcollection', db.UrlSchema, 'urlcollection');
     var urlDB = new Urls({ url: url });
     
-    urlDB.save(function (err, urlObject) {
+    urlDB.save(function (err, urlModel) {
         if (err) {
             console.log("Error! " + err.message);
             return false;
         }
         else {
             io.emit('updateImages', {id: urlDB._id, url: url, thumbs: []});
-            getHtml(url, urlObject);
+            getHtml(url, urlModel);
         }
     });
 }
 
-function getHtml(url, urlObject){
+function getHtml(url, urlModel){
 	request(url, { json: true }, (err, res, body) => {
 	  if (err) { return console.log(err); }
 	  let images = getImages(body);
-	  io.emit('updateImages', {id: urlObject._id, url: url, thumbs: images});
+	  console.log("images", images);
+	  urlModel.overwrite({ images: images, url: url, thumbs: []});
+	  urlModel.save();
+	  io.emit('updateImages', {id: urlModel._id, url: url, thumbs: images});
 	});
 }
 
