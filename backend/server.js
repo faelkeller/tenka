@@ -1,4 +1,5 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const isUrl = require("is-valid-http-url");
@@ -8,7 +9,8 @@ const parseHtml = require('node-html-parser');
 const isImageUrl = require('is-image-url');
 const isBase64 = require('is-base64');
 const jimp = require('jimp');
-let promisesIsImage64 = [];
+
+app.use(express.static('public'));
 
 http.listen(3000, function(){
 	console.log('Servidor rodando em: http://localhost:3000');
@@ -48,7 +50,7 @@ function storeUrl(url){
             return false;
         }
         else {
-            io.emit('updateImages', {id: urlDB._id, url: url, thumbs: []});
+            io.emit('makeNew', {id: urlDB._id, url: url, thumbs: []});
             getHtml(url, urlModel);
         }
     });
@@ -58,12 +60,84 @@ function getHtml(url, urlModel){
 	request(url, { json: true }, (err, res, body) => {
 		if (err) { return console.log(err); }
 		getImages(body).then((images) => {
-			console.log("images", images);
 			urlModel.overwrite({ images: images, url: url, thumbs: []});
-			urlModel.save();
-			io.emit('updateImages', {id: urlModel._id, url: url, thumbs: images});	
+			makeThumbs(url, urlModel, images);	
 		});
 	});
+}
+
+async function makeThumbs(url, urlModel, images){
+	let count = 0;
+
+
+	
+	let promises = images.map(async (strImage) => {
+		count++;
+		return await makeThumb(strImage, urlModel._id, count);
+	});
+	
+	let arrayThumbs = await Promise.all(promises).then(function(thumbs) {				
+	    return (thumbs != undefined) ? thumbs.filter(withoutFalse) : [];
+	});		
+
+	urlModel.overwrite({ images: images, url: url, thumbs: arrayThumbs});
+	urlModel.save();
+
+	let id = urlModel._id;
+
+	arrayThumbs.map((thumb) => {
+		io.emit('updateImages', {id: id, thumbs: ["http://localhost:3000/images/thumbs/" + thumb]});
+	});	
+}
+
+ async function makeThumb(strImage, id, count){	
+
+ 	let thumb = await jimp.read(checkType(strImage))
+ 	.then((image) => {
+ 		console.log("Processando imagem " + count);	
+ 		let path = "public/images/thumbs/" + id + "/" + count + "." + getExtension(strImage);
+ 		if (image.bitmap.width > 240){
+ 			image.resize(240, 240).quality(50).write(path);
+ 		} else {
+ 			image.write(path);
+ 		}
+ 		
+        return path.replace("public/images/thumbs/", "");
+ 	})
+ 	.catch((err) => {
+ 		console.log("Error Make Thumb", err);
+ 		return false;
+ 	});
+
+	return thumb;
+}
+
+function checkType(strImage){
+
+	if (isBase64(strImage, {mimeRequired: true})){
+		return strForImageBase64(strImage);
+	}
+
+	return strImage;
+	
+}
+
+function strForImageBase64(strBase64){
+	strBase64 = strBase64.split(',');
+	let buf = Buffer.from(strBase64[1], 'base64');
+	return buf;
+}
+
+function getExtension(strImage){
+	return isUrl(strImage) ? getExtensionUrl(strImage) : getExtensionBase64(strImage);	
+}
+
+function getExtensionUrl(strImage){
+	return strImage.split('.').pop();
+} 
+
+function getExtensionBase64(strImage){
+	return strImage.split(';')[0].split('/')[1];
 }
 
 async function getImages(html){	
@@ -73,10 +147,7 @@ async function getImages(html){
 	let promises = images.map(async (image) => {
 		let strUrl = image.getAttribute('src');
 
-		console.log("checkImg(strUrl)", await checkImg(strUrl));
-
 		if (await checkImg(strUrl)){
-			console.log("push images");
 			return strUrl;
 		} else {
 			return false;
@@ -119,10 +190,8 @@ async function checkImg(strUrl){
 }
 
 async function checkImageBase64(strBase64){
-	
-	strBase64 = strBase64.split(',');
 
-	let buf = Buffer.from(strBase64[0], 'base64');
+	let buf = strForImageBase64(strBase64);
 
 	let boolReturn; 
 

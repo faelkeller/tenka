@@ -20,10 +20,19 @@ class App extends Component {
   componentDidMount() {
     const { endpoint } = this.state;
     const socket = socketIOClient(endpoint);
-    socket.on("updateImages", data => this.pushUrl(data));
+    socket.on("makeNew", data => this.makeNew(data));
+    socket.on("updateImages", data => this.updateImages(data));
   }
 
-  pushUrl(objectUrl){
+  makeNew(objectUrl){
+    let urls = this.state.urls;
+    urls.push(objectUrl); 
+    this.setState((state) => {
+      return {urls: urls}
+    }); 
+  }
+
+  updateImages(objectUrl){
     let urls = this.state.urls;
 
     var index = null;
@@ -35,10 +44,11 @@ class App extends Component {
     }
 
     if (index !== null){
-      urls.splice(index, 1);  
+      let thumbs = objectUrl.thumbs;
+      thumbs.map((thumb) => {
+        urls[index].thumbs.push(thumb);
+      });
     }
-    
-    urls.push(objectUrl);
     
     this.setState((state) => {
       return {urls: urls}
