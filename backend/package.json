@@ -20,7 +20,10 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.*",
+    "is-base64": "^1.1.0",
+    "is-image-url": "^1.1.8",
     "is-valid-http-url": "^1.0.3",
+    "jimp": "^0.14.0",
     "mongodb": "^3.5.9",
     "mongoose": "^5.9.20",
     "node-html-parser": "^1.2.20",
