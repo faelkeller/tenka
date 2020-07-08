@@ -9,7 +9,7 @@ class CardUrl extends Component{
 
     let thumbs = this.props.thumbs;
     let items = thumbs.map((thumb, idx) =>
-      <Col key={idx} className="mb-2"><img key={idx} alt="..." src={thumb} className="img-fluid" /></Col>
+      <Col key={idx} className="mb-2"><img key={idx} alt="..." src={thumb} style={{border: "1px solid black"}} className="img-fluid" /></Col>
     );
 
 
