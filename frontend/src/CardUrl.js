@@ -1,15 +1,16 @@
 import React, { Component } from "react";
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Alert from 'react-bootstrap/Alert';
+import ColImage from './ColImage';
 
-class CardUrl extends Component{
+class CardUrl extends Component{ 
+
   render(){
 
     let thumbs = this.props.thumbs;
-    let items = thumbs.map((thumb, idx) =>
-      <Col key={idx} className="mb-2"><img key={idx} alt="..." src={thumb} style={{border: "1px solid black"}} className="img-fluid" /></Col>
+    let items = thumbs.map((thumb, idx) => 
+      <ColImage key={idx} idx={idx} thumb={thumb} ></ColImage> 
     );
 
 
