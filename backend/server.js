@@ -69,11 +69,9 @@ function getHtml(url, urlModel){
 async function makeThumbs(url, urlModel, images){
 	let count = 0;
 
-
-	
-	let promises = images.map(async (strImage) => {
+	let promises = images.map(async (strImage) => {		
 		count++;
-		return await makeThumb(strImage, urlModel._id, count);
+		return await makeThumb(strImage, urlModel._id, count);			
 	});
 	
 	let arrayThumbs = await Promise.all(promises).then(function(thumbs) {				
@@ -85,23 +83,19 @@ async function makeThumbs(url, urlModel, images){
 
 	let id = urlModel._id;
 
-	arrayThumbs.map((thumb) => {
-		io.emit('updateImages', {id: id, thumbs: ["http://localhost:3000/images/thumbs/" + thumb]});
+	arrayThumbs.map((thumb) => {		
+		io.emit('updateImages', {id: id, thumbs: ["http://localhost:3000/images/thumbs/" + thumb]});		
 	});	
 }
 
  async function makeThumb(strImage, id, count){	
 
  	let thumb = await jimp.read(checkType(strImage))
- 	.then((image) => {
+ 	.then(async (image) => {
  		console.log("Processando imagem " + count);	
- 		let path = "public/images/thumbs/" + id + "/" + count + "." + getExtension(strImage);
- 		if (image.bitmap.width > 240){
- 			image.resize(240, 240).quality(50).write(path);
- 		} else {
- 			image.write(path);
- 		}
- 		
+ 		let ext = getExtension(strImage);
+ 		let path = "public/images/thumbs/" + id + "/" + count + "." + ext;
+		image.resize(240, 240).quality(50).write(path);
         return path.replace("public/images/thumbs/", "");
  	})
  	.catch((err) => {
@@ -167,6 +161,15 @@ function withoutFalse(value){
 }
 
 async function checkImg(strUrl){
+
+	let ext = getExtension(strUrl); 
+
+	let allowedExt = ['png', 'jpg', 'jpeg'];
+
+	if (!allowedExt.includes(ext)){
+		return false;
+	}
+
 	if (isUrl(strUrl) && isImageUrl(strUrl)){
 		return true;
 	}
@@ -184,7 +187,7 @@ async function checkImg(strUrl){
 			});
 
 		return boolReturn;
-	}
+	}	
 
 	return false;
 }
