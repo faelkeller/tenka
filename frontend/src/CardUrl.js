@@ -8,7 +8,12 @@ class CardUrl extends Component{
 
   render(){
 
-    let thumbs = this.props.thumbs;
+    let urlObject = this.props.urlObject; 
+    let url = urlObject.url;
+    let thumbs = urlObject.thumbs;
+    let id = urlObject.id;
+    let hiddenMsg = (urlObject.thumbLoaded === true) ? true : false;
+    
     let items = thumbs.map((thumb, idx) => 
       <ColImage key={idx} idx={idx} thumb={thumb} ></ColImage> 
     );
@@ -19,9 +24,14 @@ class CardUrl extends Component{
         <Card.Body>
           <Card.Title>
             <Alert variant="info">
-              #{this.props.id} - {this.props.url}
+              #{id} - {url}
             </Alert>
           </Card.Title>
+          {hiddenMsg === false &&
+            <Alert variant="secondary">
+              Carregando imagens ...
+            </Alert>
+          }
           <Row md={4}>
             {items}
           </Row>

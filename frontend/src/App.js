@@ -58,6 +58,7 @@ class App extends Component {
       let thumbs = objectUrl.thumbs;
       thumbs.map((thumb) => {
         urls[index].thumbs.push(thumb);
+        urls[index].thumbLoaded = true;
       });
     }
     
@@ -83,7 +84,7 @@ class App extends Component {
 
     let urls = this.state.urls;
     let items = urls.map((urlObject, idx) =>
-      <CardUrl key={urlObject.id} id={urlObject.id} url={urlObject.url} thumbs={urlObject.thumbs}  />
+      <CardUrl key={urlObject.id} urlObject={urlObject}   />
     );
 
     return (
