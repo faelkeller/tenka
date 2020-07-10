@@ -16,6 +16,12 @@ http.listen(3000, function(){
 	console.log('Servidor rodando em: http://localhost:3000');
 });
 
+app.get('/urllist', function(req, res) {
+	getUrlsDb().then( (docs) => {
+		res.send(docs);
+	});
+});
+
 io.on('connection', function(socket){
 	socket.on('sendUrl', function(url){
 
@@ -26,23 +32,51 @@ io.on('connection', function(socket){
 		let html = storeUrl(url);
 		
 	});
+
+	socket.on('getUrls', function(url){		
+		getUrlsDb().then( (docs) => {
+
+			docs.map(function (doc){
+				makeNew(doc._id, doc.url, socket.id);
+				doc.thumbs.map( (thumb) => {
+					sendThumb(doc._id, thumb, socket.id);
+				});
+			});
+		});
+	});
 });
 
-/* GET Userlist page. */
-app.get('/urllist', function(req, res) {
-   var db = require("./db");
-   var Urls= db.Mongoose.model('urlcollection', db.UrlSchema, 'urlcollection');
-   Urls.find({}).lean().exec(
-      function (e, docs) {
-         res.send(docs);
-   });
-});
+function makeNew(id, url, socketId){
+	let io = getIo(socketId); 	
+	io.emit('makeNew', {id: id, url: url, thumbs: []});
+} 
+
+function sendThumb(id, thumb, socketId){
+	let io = getIo(socketId);
+	io.emit('updateImages', {id: id, thumbs: ["http://localhost:3000/images/thumbs/" + thumb]});
+}
+
+function getIo(socketId){
+	return (socketId === undefined) ? io : io.to(socketId);
+}
+
+function getUrlsDb(){
+	let Urls = getUrlsSchema();
+
+	let returnDocs;
+	
+	return Urls.find({}).lean().exec();
+}
+
+function getUrlsSchema(){
+	let db = require("./db");
+	let Urls = db.Mongoose.model('urlcollection', db.UrlSchema, 'urlcollection');
+	return Urls;
+}
 
 function storeUrl(url){
-
-	var db = require("./db"); 
-    var Urls = db.Mongoose.model('urlcollection', db.UrlSchema, 'urlcollection');
-    var urlDB = new Urls({ url: url });
+    let Urls = getUrlsSchema();
+    let urlDB = new Urls({ url: url });
     
     urlDB.save(function (err, urlModel) {
         if (err) {
@@ -50,7 +84,7 @@ function storeUrl(url){
             return false;
         }
         else {
-            io.emit('makeNew', {id: urlDB._id, url: url, thumbs: []});
+        	makeNew(urlDB._id, url);
             getHtml(url, urlModel);
         }
     });
@@ -83,8 +117,8 @@ async function makeThumbs(url, urlModel, images){
 
 	let id = urlModel._id;
 
-	arrayThumbs.map((thumb) => {		
-		io.emit('updateImages', {id: id, thumbs: ["http://localhost:3000/images/thumbs/" + thumb]});		
+	arrayThumbs.map((thumb) => {
+		sendThumb(id, thumb);				
 	});	
 }
 
