@@ -37,7 +37,7 @@ class App extends Component {
 
   makeNew(objectUrl){
     let urls = this.state.urls;
-    urls.push(objectUrl); 
+    urls.unshift(objectUrl); 
     this.setState((state) => {
       return {urls: urls}
     }); 
