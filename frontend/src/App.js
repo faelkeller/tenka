@@ -13,7 +13,8 @@ class App extends Component {
       urls: [],
       endpoint: "http://localhost:3000",
       url: "",
-      processing: []
+      processing: [],
+      socket: null
     };
   }
 
@@ -22,6 +23,16 @@ class App extends Component {
     const socket = socketIOClient(endpoint);
     socket.on("makeNew", data => this.makeNew(data));
     socket.on("updateImages", data => this.updateImages(data));
+    socket.on("listUrls", data => this.listUrls(data));
+    socket.emit("getUrls", {});
+    this.setState((state) => {
+      return {socket: socket}
+    });
+    
+  }
+
+  listUrls(arrayUrls){
+
   }
 
   makeNew(objectUrl){
@@ -62,8 +73,7 @@ class App extends Component {
 
   sendUrl(){
     let url = this.state.url;
-    const socket = socketIOClient(this.state.endpoint);
-    socket.emit('sendUrl', url)
+    this.state.socket.emit('sendUrl', url)
     this.setState((state) => {
       return {url: ""}
     }); 
